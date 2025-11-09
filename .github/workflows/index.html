@@ -1,0 +1,2393 @@
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抖音本地生活服务商CRM系统</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <!-- 统一的 Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0052D9',
+                        secondary: '#00A870',
+                        accent: '#FF6B00',
+                        warning: '#FF4D4F',
+                        light: '#F0F5FF',
+                        dark: '#141414',
+                        'gray-100': '#F5F5F5',
+                        'gray-200': '#E5E5E5',
+                        'gray-300': '#D4D4D4',
+                        'gray-400': '#A3A3A3',
+                        'gray-500': '#737373',
+                        'gray-600': '#525252',
+                        'gray-700': '#404040',
+                        'gray-800': '#262626',
+                        'gray-900': '#171717',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 2px 12px 0 rgba(0, 0, 0, 0.08)',
+                        'hover': '0 4px 16px 0 rgba(0, 0, 0, 0.12)',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-in-out',
+                        'slide-in': 'slideIn 0.3s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .glass-effect {
+                background: rgba(255, 255, 255, 0.8);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .calendar-day {
+                height: 100px;
+                min-height: 100px;
+                max-height: 100px;
+                overflow-y: auto;
+            }
+            .calendar-event {
+                font-size: 12px;
+                padding: 2px 4px;
+                margin-bottom: 2px;
+                border-radius: 4px;
+                cursor: pointer;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边导航栏 -->
+        <aside class="w-64 bg-primary text-white flex flex-col shadow-lg z-10">
+            <!-- Logo -->
+            <div class="p-4 flex items-center justify-center border-b border-blue-700">
+                <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/03f909f25351476a97ce9dc8dde98008~tplv-a9rns2rl98-image.image?rcl=20251109185538F68BC02C7DD6235C16B0&amp;rk3s=8e244e95&amp;rrcfp=f06b921b&amp;x-expires=1765277782&amp;x-signature=cwyST9bTK9zqceTYLnzgjqCp7pg%3D" alt="抖音本地生活服务商CRM系统" class="h-12">
+            </div>
+            
+            <!-- 导航菜单 -->
+            <nav class="flex-1 overflow-y-auto py-4">
+                <ul>
+                    <li class="mb-1">
+                        <a href="#dashboard" class="nav-link flex items-center px-4 py-3 text-white bg-blue-700 hover:bg-blue-800 transition-all-300" data-target="dashboard">
+                            <i class="fa fa-dashboard w-6"></i>
+                            <span>仪表盘</span>
+                        </a>
+                    </li>
+                    <li class="mb-1">
+                        <a href="#customers" class="nav-link flex items-center px-4 py-3 text-white hover:bg-blue-800 transition-all-300" data-target="customers">
+                            <i class="fa fa-users w-6"></i>
+                            <span>客户管理</span>
+                        </a>
+                    </li>
+                    <li class="mb-1">
+                        <a href="#anchors" class="nav-link flex items-center px-4 py-3 text-white hover:bg-blue-800 transition-all-300" data-target="anchors">
+                            <i class="fa fa-user-circle w-6"></i>
+                            <span>主播管理</span>
+                        </a>
+                    </li>
+                    <li class="mb-1">
+                        <a href="#schedule" class="nav-link flex items-center px-4 py-3 text-white hover:bg-blue-800 transition-all-300" data-target="schedule">
+                            <i class="fa fa-calendar w-6"></i>
+                            <span>主播排期</span>
+                        </a>
+                    </li>
+                    <li class="mb-1">
+                        <a href="#tasks" class="nav-link flex items-center px-4 py-3 text-white hover:bg-blue-800 transition-all-300" data-target="tasks">
+                            <i class="fa fa-tasks w-6"></i>
+                            <span>任务管理</span>
+                        </a>
+                    </li>
+                    <li class="mb-1">
+                        <a href="#users" class="nav-link flex items-center px-4 py-3 text-white hover:bg-blue-800 transition-all-300" data-target="users">
+                            <i class="fa fa-user-circle w-6"></i>
+                            <span>用户管理</span>
+                        </a>
+                    </li>
+                    <li class="mb-1">
+                        <a href="#collaboration" class="nav-link flex items-center px-4 py-3 text-white hover:bg-blue-800 transition-all-300" data-target="collaboration">
+                            <i class="fa fa-users w-6"></i>
+                            <span>协作状态</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <!-- 用户信息 -->
+            <div class="p-4 border-t border-blue-700">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary font-bold">
+                        管
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">管理员</p>
+                        <p class="text-xs text-blue-200">admin@example.com</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="flex-1 overflow-y-auto bg-gray-100">
+            <!-- 顶部导航栏 -->
+            <header class="bg-white shadow-sm">
+                <div class="flex items-center justify-between px-6 py-3">
+                    <div class="flex items-center">
+                        <button id="menu-toggle" class="mr-4 text-gray-500 focus:outline-none lg:hidden">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <h1 class="text-xl font-semibold text-gray-800" id="page-title">仪表盘</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <input type="text" placeholder="搜索..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <i class="fa fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        <button class="relative p-2 text-gray-500 hover:text-primary focus:outline-none">
+                            <i class="fa fa-bell"></i>
+                            <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        <button class="relative p-2 text-gray-500 hover:text-primary focus:outline-none">
+                            <i class="fa fa-envelope"></i>
+                            <span class="absolute top-0 right-0 w-2 h-2 bg-blue-500 rounded-full"></span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 页面内容 -->
+            <div class="p-6">
+                <!-- 仪表盘页面 -->
+                <section id="dashboard" class="page-section active">
+                    <!-- 数据卡片 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white rounded-lg shadow-card p-6 hover:shadow-hover transition-all-300">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">总支付GMV</p>
+                                    <p class="text-2xl font-bold text-gray-800 mt-1">¥1,258,430</p>
+                                    <p class="text-xs text-green-500 mt-1">
+                                        <i class="fa fa-arrow-up"></i> 12.5% 较上月
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-primary">
+                                    <i class="fa fa-shopping-cart fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-card p-6 hover:shadow-hover transition-all-300">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">总核销GMV</p>
+                                    <p class="text-2xl font-bold text-gray-800 mt-1">¥985,670</p>
+                                    <p class="text-xs text-green-500 mt-1">
+                                        <i class="fa fa-arrow-up"></i> 8.3% 较上月
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-secondary">
+                                    <i class="fa fa-check-circle fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-card p-6 hover:shadow-hover transition-all-300">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">活跃客户数</p>
+                                    <p class="text-2xl font-bold text-gray-800 mt-1">258</p>
+                                    <p class="text-xs text-green-500 mt-1">
+                                        <i class="fa fa-arrow-up"></i> 5.2% 较上月
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-accent">
+                                    <i class="fa fa-users fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-card p-6 hover:shadow-hover transition-all-300">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">活跃主播数</p>
+                                    <p class="text-2xl font-bold text-gray-800 mt-1">36</p>
+                                    <p class="text-xs text-red-500 mt-1">
+                                        <i class="fa fa-arrow-down"></i> 2.1% 较上月
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                                    <i class="fa fa-user-circle fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 图表区域 -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white rounded-lg shadow-card p-6 hover:shadow-hover transition-all-300">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800">GMV趋势</h3>
+                                <div class="flex space-x-2">
+                                    <button class="px-3 py-1 text-xs font-medium rounded-full bg-primary text-white">月度</button>
+                                    <button class="px-3 py-1 text-xs font-medium rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300">季度</button>
+                                    <button class="px-3 py-1 text-xs font-medium rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300">年度</button>
+                                </div>
+                            </div>
+                            <div class="h-64">
+                                <canvas id="gmvChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-card p-6 hover:shadow-hover transition-all-300">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800">客户分布</h3>
+                                <div>
+                                    <button class="text-gray-500 hover:text-primary">
+                                        <i class="fa fa-ellipsis-v"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="h-64">
+                                <canvas id="customerChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 主播业绩排行 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 hover:shadow-hover transition-all-300">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">主播业绩排行</h3>
+                            <button class="text-primary hover:underline text-sm">查看全部</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr class="border-b border-gray-200">
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">排名</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">主播</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">类别</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">支付GMV</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">核销GMV</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">完成率</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">1</span>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-primary font-bold">
+                                                    张
+                                                </div>
+                                                <div class="ml-3">
+                                                    <p class="text-sm font-medium text-gray-800">张小明</p>
+                                                    <p class="text-xs text-gray-500">zhang@example.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">美食</span>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">¥125,680</td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">¥102,450</td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-gray-800 mr-2">81.5%</span>
+                                                <div class="w-24 bg-gray-200 rounded-full h-2">
+                                                    <div class="bg-green-500 h-2 rounded-full" style="width: 81.5%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-200 text-gray-800">2</span>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 font-bold">
+                                                    李
+                                                </div>
+                                                <div class="ml-3">
+                                                    <p class="text-sm font-medium text-gray-800">李小红</p>
+                                                    <p class="text-xs text-gray-500">li@example.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-pink-100 text-pink-800">美妆</span>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">¥108,450</td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">¥92,680</td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-gray-800 mr-2">85.5%</span>
+                                                <div class="w-24 bg-gray-200 rounded-full h-2">
+                                                    <div class="bg-green-500 h-2 rounded-full" style="width: 85.5%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-orange-100 text-orange-800">3</span>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">
+                                                    王
+                                                </div>
+                                                <div class="ml-3">
+                                                    <p class="text-sm font-medium text-gray-800">王大力</p>
+                                                    <p class="text-xs text-gray-500">wang@example.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">旅游</span>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">¥95,680</td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">¥82,450</td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-gray-800 mr-2">86.2%</span>
+                                                <div class="w-24 bg-gray-200 rounded-full h-2">
+                                                    <div class="bg-green-500 h-2 rounded-full" style="width: 86.2%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-200 text-gray-800">4</span>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold">
+                                                    赵
+                                                </div>
+                                                <div class="ml-3">
+                                                    <p class="text-sm font-medium text-gray-800">赵小丽</p>
+                                                    <p class="text-xs text-gray-500">zhao@example.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">服饰</span>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">¥85,450</td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">¥72,680</td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-gray-800 mr-2">85.0%</span>
+                                                <div class="w-24 bg-gray-200 rounded-full h-2">
+                                                    <div class="bg-green-500 h-2 rounded-full" style="width: 85.0%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-200 text-gray-800">5</span>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold">
+                                                    陈
+                                                </div>
+                                                <div class="ml-3">
+                                                    <p class="text-sm font-medium text-gray-800">陈明</p>
+                                                    <p class="text-xs text-gray-500">chen@example.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">数码</span>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">¥78,680</td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">¥65,450</td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-gray-800 mr-2">83.2%</span>
+                                                <div class="w-24 bg-gray-200 rounded-full h-2">
+                                                    <div class="bg-green-500 h-2 rounded-full" style="width: 83.2%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 客户管理页面 -->
+                <section id="customers" class="page-section hidden">
+                    <div class="bg-white rounded-lg shadow-card p-6 mb-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4 md:mb-0">客户管理</h2>
+                            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+                                <div class="relative">
+                                    <input type="text" placeholder="搜索客户..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-full sm:w-64">
+                                    <i class="fa fa-search absolute left-3 top-3 text-gray-400"></i>
+                                </div>
+                                <button id="add-customer-btn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-all-300 flex items-center justify-center">
+                                    <i class="fa fa-plus mr-2"></i> 添加客户
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr class="border-b border-gray-200">
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">客户名称</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">联系方式</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">地址</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">支付GMV</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">核销GMV</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">合作状态</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200" id="customer-table-body">
+                                    <!-- 客户数据将通过JavaScript动态生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mt-6">
+                            <div class="text-sm text-gray-500">
+                                显示 <span class="font-medium">1</span> 到 <span class="font-medium">10</span> 共 <span class="font-medium">25</span> 条记录
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled="">
+                                    上一页
+                                </button>
+                                <button class="px-3 py-1 border border-gray-300 rounded-md bg-primary text-white">1</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50">2</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50">3</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50">
+                                    下一页
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 主播管理页面 -->
+                <section id="anchors" class="page-section hidden">
+                    <div class="bg-white rounded-lg shadow-card p-6 mb-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4 md:mb-0">主播管理</h2>
+                            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+                                <div class="relative">
+                                    <input type="text" placeholder="搜索主播..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-full sm:w-64">
+                                    <i class="fa fa-search absolute left-3 top-3 text-gray-400"></i>
+                                </div>
+                                <button id="add-anchor-btn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-all-300 flex items-center justify-center">
+                                    <i class="fa fa-plus mr-2"></i> 添加主播
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="anchor-grid">
+                            <!-- 主播卡片将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 主播排期页面 -->
+                <section id="schedule" class="page-section hidden">
+                    <div class="bg-white rounded-lg shadow-card p-6 mb-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4 md:mb-0">主播排期</h2>
+                            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+                                <div class="flex items-center space-x-2">
+                                    <label for="anchor-select" class="text-sm text-gray-600">选择主播:</label>
+                                    <select id="anchor-select" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        <option value="all">全部主播</option>
+                                        <!-- 主播选项将通过JavaScript动态生成 -->
+                                    </select>
+                                </div>
+                                <button id="add-schedule-btn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-all-300 flex items-center justify-center">
+                                    <i class="fa fa-plus mr-2"></i> 添加排期
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4 flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <button id="prev-month" class="p-2 rounded-full hover:bg-gray-100">
+                                    <i class="fa fa-chevron-left text-gray-600"></i>
+                                </button>
+                                <h3 class="text-lg font-medium text-gray-800" id="current-month">2025年7月</h3>
+                                <button id="next-month" class="p-2 rounded-full hover:bg-gray-100">
+                                    <i class="fa fa-chevron-right text-gray-600"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                                    <span class="text-xs text-gray-600">已确认</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                                    <span class="text-xs text-gray-600">待确认</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                                    <span class="text-xs text-gray-600">已取消</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <div class="min-w-max">
+                                <div class="grid grid-cols-7 gap-1">
+                                    <!-- 星期标题 -->
+                                    <div class="text-center py-2 font-medium text-gray-600 bg-gray-50">周日</div>
+                                    <div class="text-center py-2 font-medium text-gray-600 bg-gray-50">周一</div>
+                                    <div class="text-center py-2 font-medium text-gray-600 bg-gray-50">周二</div>
+                                    <div class="text-center py-2 font-medium text-gray-600 bg-gray-50">周三</div>
+                                    <div class="text-center py-2 font-medium text-gray-600 bg-gray-50">周四</div>
+                                    <div class="text-center py-2 font-medium text-gray-600 bg-gray-50">周五</div>
+                                    <div class="text-center py-2 font-medium text-gray-600 bg-gray-50">周六</div>
+                                    
+                                    <!-- 日历格子 -->
+                                    <div id="calendar-grid" class="grid grid-cols-7 gap-1">
+                                        <!-- 日历内容将通过JavaScript动态生成 -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 任务管理页面 -->
+                <section id="tasks" class="page-section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- 任务列表 -->
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-lg shadow-card p-6 mb-6">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                                    <h2 class="text-xl font-semibold text-gray-800 mb-4 md:mb-0">任务管理</h2>
+                                    <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+                                        <div class="relative">
+                                            <input type="text" placeholder="搜索任务..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-full sm:w-64">
+                                            <i class="fa fa-search absolute left-3 top-3 text-gray-400"></i>
+                                        </div>
+                                        <button id="add-task-btn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-all-300 flex items-center justify-center">
+                                            <i class="fa fa-plus mr-2"></i> 发布任务
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex border-b border-gray-200 mb-4">
+                                    <button class="px-4 py-2 text-primary border-b-2 border-primary font-medium">全部</button>
+                                    <button class="px-4 py-2 text-gray-500 hover:text-gray-700">待接单</button>
+                                    <button class="px-4 py-2 text-gray-500 hover:text-gray-700">进行中</button>
+                                    <button class="px-4 py-2 text-gray-500 hover:text-gray-700">已完成</button>
+                                    <button class="px-4 py-2 text-gray-500 hover:text-gray-700">已取消</button>
+                                </div>
+                                
+                                <div class="space-y-4" id="task-list">
+                                    <!-- 任务卡片将通过JavaScript动态生成 -->
+                                </div>
+                                
+                                <div class="flex items-center justify-between mt-6">
+                                    <div class="text-sm text-gray-500">
+                                        显示 <span class="font-medium">1</span> 到 <span class="font-medium">6</span> 共 <span class="font-medium">18</span> 条记录
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled="">
+                                            上一页
+                                        </button>
+                                        <button class="px-3 py-1 border border-gray-300 rounded-md bg-primary text-white">1</button>
+                                        <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50">2</button>
+                                        <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50">3</button>
+                                        <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50">
+                                            下一页
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 任务统计 -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-white rounded-lg shadow-card p-6 mb-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">任务统计</h3>
+                                <div class="h-64">
+                                    <canvas id="taskStatusChart"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-lg shadow-card p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">任务趋势</h3>
+                                <div class="h-64">
+                                    <canvas id="taskTrendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 用户管理页面 -->
+                <section id="users" class="page-section hidden">
+                    <div class="bg-white rounded-lg shadow-card p-6 mb-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4 md:mb-0">用户管理</h2>
+                            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+                                <div class="relative">
+                                    <input type="text" id="user-search" placeholder="搜索用户..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-full sm:w-64">
+                                    <i class="fa fa-search absolute left-3 top-3 text-gray-400"></i>
+                                </div>
+                                <div class="relative">
+                                    <select id="role-filter" class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-full sm:w-40 appearance-none">
+                                        <option value="all">所有角色</option>
+                                        <option value="admin">管理员</option>
+                                        <option value="manager">经理</option>
+                                        <option value="operator">操作员</option>
+                                        <option value="viewer">查看者</option>
+                                    </select>
+                                    <i class="fa fa-filter absolute left-3 top-3 text-gray-400"></i>
+                                    <i class="fa fa-chevron-down absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
+                                </div>
+                                <button id="add-user-btn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-all-300 flex items-center justify-center">
+                                    <i class="fa fa-plus mr-2"></i> 添加用户
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr class="border-b border-gray-200">
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">用户</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">邮箱</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">角色</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">最后登录</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200" id="user-table-body">
+                                    <!-- 用户数据将通过JavaScript动态生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mt-6">
+                            <div class="text-sm text-gray-500">
+                                显示 <span class="font-medium">1</span> 到 <span class="font-medium">10</span> 共 <span class="font-medium">12</span> 条记录
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled="">
+                                    上一页
+                                </button>
+                                <button class="px-3 py-1 border border-gray-300 rounded-md bg-primary text-white">1</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50">2</button>
+                                <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-500 hover:bg-gray-50">
+                                    下一页
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 协作状态页面 -->
+                <section id="collaboration" class="page-section hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <!-- 在线用户状态 -->
+                        <div class="bg-white rounded-lg shadow-card p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800">在线用户</h3>
+                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800" id="online-user-count">5/12 在线</span>
+                            </div>
+                            <div class="space-y-4" id="online-users-list">
+                                <!-- 在线用户列表将通过JavaScript动态生成 -->
+                            </div>
+                        </div>
+                        
+                        <!-- 活跃任务监控 -->
+                        <div class="bg-white rounded-lg shadow-card p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800">活跃任务</h3>
+                                <button class="text-primary hover:underline text-sm">查看全部</button>
+                            </div>
+                            <div class="h-64">
+                                <canvas id="activeTasksChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <!-- 协作统计 -->
+                        <div class="bg-white rounded-lg shadow-card p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800">协作统计</h3>
+                                <div class="flex space-x-2">
+                                    <button class="px-3 py-1 text-xs font-medium rounded-full bg-primary text-white">今日</button>
+                                    <button class="px-3 py-1 text-xs font-medium rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300">本周</button>
+                                    <button class="px-3 py-1 text-xs font-medium rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300">本月</button>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm text-gray-600">任务完成率</span>
+                                        <span class="text-sm font-medium text-gray-800">78%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: 78%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm text-gray-600">协作活跃度</span>
+                                        <span class="text-sm font-medium text-gray-800">85%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-500 h-2 rounded-full" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm text-gray-600">响应速度</span>
+                                        <span class="text-sm font-medium text-gray-800">92%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-purple-500 h-2 rounded-full" style="width: 92%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm text-gray-600">客户满意度</span>
+                                        <span class="text-sm font-medium text-gray-800">88%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 88%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- 协作记录 -->
+                        <div class="bg-white rounded-lg shadow-card p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800">协作记录</h3>
+                                <div class="relative">
+                                    <input type="text" placeholder="搜索记录..." class="pl-10 pr-4 py-1 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-full sm:w-48">
+                                    <i class="fa fa-search absolute left-3 top-2 text-gray-400"></i>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <!-- 时间线 -->
+                                <div class="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+                                <div class="space-y-6 pl-12" id="collaboration-history">
+                                    <!-- 协作记录将通过JavaScript动态生成 -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 操作日志 -->
+                        <div class="bg-white rounded-lg shadow-card p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800">操作日志</h3>
+                                <div class="relative">
+                                    <input type="text" placeholder="搜索日志..." class="pl-10 pr-4 py-1 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-full sm:w-48">
+                                    <i class="fa fa-search absolute left-3 top-2 text-gray-400"></i>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full">
+                                    <thead>
+                                        <tr class="border-b border-gray-200">
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">用户</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">时间</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">详情</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200" id="operation-logs">
+                                        <!-- 操作日志将通过JavaScript动态生成 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <!-- 添加客户模态框 -->
+    <div id="add-customer-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md animate-fade-in">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">添加客户</h3>
+                <button class="close-modal text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <form id="add-customer-form" class="p-6">
+                <div class="mb-4">
+                    <label for="customer-name" class="block text-sm font-medium text-gray-700 mb-1">客户名称</label>
+                    <input type="text" id="customer-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                </div>
+                <div class="mb-4">
+                    <label for="customer-contact" class="block text-sm font-medium text-gray-700 mb-1">联系方式</label>
+                    <input type="text" id="customer-contact" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                </div>
+                <div class="mb-4">
+                    <label for="customer-address" class="block text-sm font-medium text-gray-700 mb-1">地址</label>
+                    <input type="text" id="customer-address" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="payment-gmv" class="block text-sm font-medium text-gray-700 mb-1">支付GMV</label>
+                        <input type="number" id="payment-gmv" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                    </div>
+                    <div>
+                        <label for="verification-gmv" class="block text-sm font-medium text-gray-700 mb-1">核销GMV</label>
+                        <input type="number" id="verification-gmv" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <label for="cooperation-status" class="block text-sm font-medium text-gray-700 mb-1">合作状态</label>
+                    <select id="cooperation-status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                        <option value="active">合作中</option>
+                        <option value="inactive">已暂停</option>
+                        <option value="terminated">已终止</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="close-modal px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-blue-700">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 添加主播模态框 -->
+    <div id="add-anchor-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md animate-fade-in">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">添加主播</h3>
+                <button class="close-modal text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <form id="add-anchor-form" class="p-6">
+                <div class="mb-4">
+                    <label for="anchor-name" class="block text-sm font-medium text-gray-700 mb-1">主播姓名</label>
+                    <input type="text" id="anchor-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                </div>
+                <div class="mb-4">
+                    <label for="anchor-avatar" class="block text-sm font-medium text-gray-700 mb-1">头像URL</label>
+                    <input type="text" id="anchor-avatar" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                <div class="mb-4">
+                    <label for="anchor-category" class="block text-sm font-medium text-gray-700 mb-1">主播分类</label>
+                    <select id="anchor-category" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                        <option value="food">美食</option>
+                        <option value="beauty">美妆</option>
+                        <option value="travel">旅游</option>
+                        <option value="clothing">服饰</option>
+                        <option value="digital">数码</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="anchor-performance" class="block text-sm font-medium text-gray-700 mb-1">业绩指标</label>
+                    <input type="number" id="anchor-performance" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                </div>
+                <div class="mb-6">
+                    <label for="anchor-status" class="block text-sm font-medium text-gray-700 mb-1">状态</label>
+                    <select id="anchor-status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                        <option value="available">空闲</option>
+                        <option value="busy">忙碌</option>
+                        <option value="offline">离线</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="close-modal px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-blue-700">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 添加排期模态框 -->
+    <div id="add-schedule-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md animate-fade-in">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">添加排期</h3>
+                <button class="close-modal text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <form id="add-schedule-form" class="p-6">
+                <div class="mb-4">
+                    <label for="schedule-anchor" class="block text-sm font-medium text-gray-700 mb-1">选择主播</label>
+                    <select id="schedule-anchor" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                        <option value="">请选择主播</option>
+                        <!-- 主播选项将通过JavaScript动态生成 -->
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="schedule-task" class="block text-sm font-medium text-gray-700 mb-1">选择任务</label>
+                    <select id="schedule-task" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                        <option value="">请选择任务</option>
+                        <!-- 任务选项将通过JavaScript动态生成 -->
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="schedule-date" class="block text-sm font-medium text-gray-700 mb-1">日期</label>
+                    <input type="date" id="schedule-date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="schedule-start-time" class="block text-sm font-medium text-gray-700 mb-1">开始时间</label>
+                        <input type="time" id="schedule-start-time" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                    </div>
+                    <div>
+                        <label for="schedule-end-time" class="block text-sm font-medium text-gray-700 mb-1">结束时间</label>
+                        <input type="time" id="schedule-end-time" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="schedule-location" class="block text-sm font-medium text-gray-700 mb-1">地点</label>
+                    <input type="text" id="schedule-location" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                </div>
+                <div class="mb-6">
+                    <label for="schedule-status" class="block text-sm font-medium text-gray-700 mb-1">状态</label>
+                    <select id="schedule-status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                        <option value="confirmed">已确认</option>
+                        <option value="pending">待确认</option>
+                        <option value="cancelled">已取消</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="close-modal px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-blue-700">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 发布任务模态框 -->
+    <div id="add-task-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md animate-fade-in">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">发布任务</h3>
+                <button class="close-modal text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <form id="add-task-form" class="p-6">
+                <div class="mb-4">
+                    <label for="task-title" class="block text-sm font-medium text-gray-700 mb-1">任务标题</label>
+                    <input type="text" id="task-title" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                </div>
+                <div class="mb-4">
+                    <label for="task-description" class="block text-sm font-medium text-gray-700 mb-1">任务描述</label>
+                    <textarea id="task-description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required=""></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="task-customer" class="block text-sm font-medium text-gray-700 mb-1">选择客户</label>
+                    <select id="task-customer" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                        <option value="">请选择客户</option>
+                        <!-- 客户选项将通过JavaScript动态生成 -->
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="task-requirements" class="block text-sm font-medium text-gray-700 mb-1">任务要求</label>
+                    <textarea id="task-requirements" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required=""></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="task-deadline" class="block text-sm font-medium text-gray-700 mb-1">截止时间</label>
+                    <input type="datetime-local" id="task-deadline" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                </div>
+                <div class="mb-6">
+                    <label for="task-anchors" class="block text-sm font-medium text-gray-700 mb-1">可选主播（可多选）</label>
+                    <select id="task-anchors" multiple="" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent h-32">
+                        <!-- 主播选项将通过JavaScript动态生成 -->
+                    </select>
+                    <p class="text-xs text-gray-500 mt-1">按住Ctrl键可多选</p>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="close-modal px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-blue-700">发布</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 添加用户模态框 -->
+    <div id="add-user-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md animate-fade-in">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">添加用户</h3>
+                <button class="close-modal text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <form id="add-user-form" class="p-6">
+                <div class="mb-4">
+                    <label for="user-name" class="block text-sm font-medium text-gray-700 mb-1">用户姓名</label>
+                    <input type="text" id="user-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                </div>
+                <div class="mb-4">
+                    <label for="user-email" class="block text-sm font-medium text-gray-700 mb-1">邮箱</label>
+                    <input type="email" id="user-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                </div>
+                <div class="mb-4">
+                    <label for="user-password" class="block text-sm font-medium text-gray-700 mb-1">密码</label>
+                    <input type="password" id="user-password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                </div>
+                <div class="mb-4">
+                    <label for="user-role" class="block text-sm font-medium text-gray-700 mb-1">角色</label>
+                    <select id="user-role" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                        <option value="admin">管理员</option>
+                        <option value="manager">经理</option>
+                        <option value="operator">操作员</option>
+                        <option value="viewer">查看者</option>
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <label for="user-status" class="block text-sm font-medium text-gray-700 mb-1">状态</label>
+                    <select id="user-status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                        <option value="active">启用</option>
+                        <option value="inactive">禁用</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="close-modal px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-blue-700">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 编辑用户模态框 -->
+    <div id="edit-user-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md animate-fade-in">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">编辑用户</h3>
+                <button class="close-modal text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <form id="edit-user-form" class="p-6">
+                <input type="hidden" id="edit-user-id">
+                <div class="mb-4">
+                    <label for="edit-user-name" class="block text-sm font-medium text-gray-700 mb-1">用户姓名</label>
+                    <input type="text" id="edit-user-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                </div>
+                <div class="mb-4">
+                    <label for="edit-user-email" class="block text-sm font-medium text-gray-700 mb-1">邮箱</label>
+                    <input type="email" id="edit-user-email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                </div>
+                <div class="mb-4">
+                    <label for="edit-user-password" class="block text-sm font-medium text-gray-700 mb-1">密码 (留空表示不修改)</label>
+                    <input type="password" id="edit-user-password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                <div class="mb-4">
+                    <label for="edit-user-role" class="block text-sm font-medium text-gray-700 mb-1">角色</label>
+                    <select id="edit-user-role" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                        <option value="admin">管理员</option>
+                        <option value="manager">经理</option>
+                        <option value="operator">操作员</option>
+                        <option value="viewer">查看者</option>
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <label for="edit-user-status" class="block text-sm font-medium text-gray-700 mb-1">状态</label>
+                    <select id="edit-user-status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required="">
+                        <option value="active">启用</option>
+                        <option value="inactive">禁用</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="close-modal px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-blue-700">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- 任务详情模态框 -->
+    <div id="task-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl animate-fade-in">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">任务详情</h3>
+                <button class="close-modal text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="mb-6">
+                    <h4 class="text-xl font-bold text-gray-800 mb-2" id="detail-task-title">任务标题</h4>
+                    <div class="flex items-center space-x-4 text-sm text-gray-500">
+                        <span><i class="fa fa-user mr-1"></i> <span id="detail-task-customer">客户名称</span></span>
+                        <span><i class="fa fa-clock-o mr-1"></i> <span id="detail-task-deadline">截止时间</span></span>
+                        <span><i class="fa fa-tag mr-1"></i> <span id="detail-task-status" class="px-2 py-1 rounded-full text-xs font-medium">待接单</span></span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h5 class="text-sm font-medium text-gray-500 mb-2">任务描述</h5>
+                        <p class="text-gray-800" id="detail-task-description">任务描述内容</p>
+                    </div>
+                    <div>
+                        <h5 class="text-sm font-medium text-gray-500 mb-2">任务要求</h5>
+                        <p class="text-gray-800" id="detail-task-requirements">任务要求内容</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h5 class="text-sm font-medium text-gray-500 mb-2">指派主播</h5>
+                    <div class="flex flex-wrap gap-2" id="detail-task-anchors">
+                        <!-- 主播标签将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h5 class="text-sm font-medium text-gray-500 mb-2">排期安排</h5>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">主播</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">日期</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">时间</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">地点</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200" id="detail-task-schedule">
+                                <!-- 排期内容将通过JavaScript动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-200 pt-6">
+                    <h5 class="text-sm font-medium text-gray-500 mb-2">操作</h5>
+                    <div class="flex space-x-3" id="task-actions">
+                        <!-- 操作按钮将根据任务状态动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        // 模拟数据
+        const mockData = {
+            users: [
+                { id: 'u1', name: '管理员', email: 'admin@example.com', role: 'admin', status: 'active', avatar: '', lastLogin: '2025-07-21T10:30:00', createdAt: '2025-01-01T00:00:00' },
+                { id: 'u2', name: '张经理', email: 'zhang@example.com', role: 'manager', status: 'active', avatar: '', lastLogin: '2025-07-21T09:15:00', createdAt: '2025-02-15T00:00:00' },
+                { id: 'u3', name: '李经理', email: 'li@example.com', role: 'manager', status: 'active', avatar: '', lastLogin: '2025-07-21T08:45:00', createdAt: '2025-02-20T00:00:00' },
+                { id: 'u4', name: '王操作员', email: 'wang@example.com', role: 'operator', status: 'active', avatar: '', lastLogin: '2025-07-21T11:20:00', createdAt: '2025-03-05T00:00:00' },
+                { id: 'u5', name: '赵操作员', email: 'zhao@example.com', role: 'operator', status: 'active', avatar: '', lastLogin: '2025-07-21T14:10:00', createdAt: '2025-03-10T00:00:00' },
+                { id: 'u6', name: '陈操作员', email: 'chen@example.com', role: 'operator', status: 'inactive', avatar: '', lastLogin: '2025-07-20T16:30:00', createdAt: '2025-03-15T00:00:00' },
+                { id: 'u7', name: '刘查看者', email: 'liu@example.com', role: 'viewer', status: 'active', avatar: '', lastLogin: '2025-07-21T13:45:00', createdAt: '2025-04-01T00:00:00' },
+                { id: 'u8', name: '林查看者', email: 'lin@example.com', role: 'viewer', status: 'active', avatar: '', lastLogin: '2025-07-21T09:30:00', createdAt: '2025-04-05T00:00:00' },
+                { id: 'u9', name: '黄操作员', email: 'huang@example.com', role: 'operator', status: 'active', avatar: '', lastLogin: '2025-07-21T10:45:00', createdAt: '2025-04-10T00:00:00' },
+                { id: 'u10', name: '周查看者', email: 'zhou@example.com', role: 'viewer', status: 'inactive', avatar: '', lastLogin: '2025-07-19T15:20:00', createdAt: '2025-04-15T00:00:00' },
+                { id: 'u11', name: '吴经理', email: 'wu@example.com', role: 'manager', status: 'active', avatar: '', lastLogin: '2025-07-21T08:15:00', createdAt: '2025-04-20T00:00:00' },
+                { id: 'u12', name: '郑操作员', email: 'zheng@example.com', role: 'operator', status: 'active', avatar: '', lastLogin: '2025-07-21T11:30:00', createdAt: '2025-04-25T00:00:00' },
+            ],
+            
+            collaborationData: {
+                activeUsers: [
+                    { userId: 'u1', name: '管理员', lastActive: '2025-07-21T10:30:00', currentPage: 'dashboard' },
+                    { userId: 'u2', name: '张经理', lastActive: '2025-07-21T09:15:00', currentPage: 'customers' },
+                    { userId: 'u4', name: '王操作员', lastActive: '2025-07-21T11:20:00', currentPage: 'tasks' },
+                    { userId: 'u5', name: '赵操作员', lastActive: '2025-07-21T14:10:00', currentPage: 'anchors' },
+                    { userId: 'u7', name: '刘查看者', lastActive: '2025-07-21T13:45:00', currentPage: 'schedule' },
+                ],
+                
+                activeTasks: [
+                    { taskId: 't2', title: '美丽化妆品夏季促销', assignees: ['a2', 'a7'], progress: 50 },
+                    { taskId: 't4', title: '时尚服装新品发布会', assignees: ['a4', 'a9'], progress: 75 },
+                    { taskId: 't5', title: '科技创新产品推广', assignees: ['a5'], progress: 30 },
+                    { taskId: 't7', title: '健康食品直播活动', assignees: ['a1', 'a6'], progress: 60 },
+                    { taskId: 't8', title: '优质教育课程宣传', assignees: ['a3', 'a8'], progress: 40 },
+                ],
+                
+                collaborationHistory: [
+                    { id: 'h1', userId: 'u1', action: 'assigned_task', targetId: 't2', targetType: 'task', timestamp: '2025-07-21T09:15:00', details: '将任务"美丽化妆品夏季促销"分配给了主播李小红和林小华' },
+                    { id: 'h2', userId: 'u2', action: 'updated_customer', targetId: 'c3', targetType: 'customer', timestamp: '2025-07-21T08:45:00', details: '更新了客户"快乐旅游社"的联系方式' },
+                    { id: 'h3', userId: 'u4', action: 'created_schedule', targetId: 's5', targetType: 'schedule', timestamp: '2025-07-21T11:20:00', details: '为任务"科技创新产品推广"创建了排期' },
+                    { id: 'h4', userId: 'u5', action: 'completed_task', targetId: 't3', targetType: 'task', timestamp: '2025-07-21T14:10:00', details: '完成了任务"快乐旅游社暑期活动"' },
+                    { id: 'h5', userId: 'u1', action: 'added_user', targetId: 'u12', targetType: 'user', timestamp: '2025-07-21T10:30:00', details: '添加了新用户"郑操作员"' },
+                    { id: 'h6', userId: 'u3', action: 'updated_anchor', targetId: 'a5', targetType: 'anchor', timestamp: '2025-07-20T16:30:00', details: '更新了主播"陈明"的业绩指标' },
+                    { id: 'h7', userId: 'u7', action: 'viewed_report', targetId: 'r2', targetType: 'report', timestamp: '2025-07-21T13:45:00', details: '查看了"6月份业绩报告"' },
+                ],
+                
+                operationLogs: [
+                    { id: 'l1', userId: 'u1', action: 'create_user', timestamp: '2025-07-21T10:30:00', details: '创建了新用户"郑操作员"' },
+                    { id: 'l2', userId: 'u1', action: 'update_user_role', timestamp: '2025-07-21T09:45:00', details: '将用户"刘查看者"的角色从操作员改为查看者' },
+                    { id: 'l3', userId: 'u2', action: 'delete_customer', timestamp: '2025-07-21T09:15:00', details: '删除了客户"无效测试客户"' },
+                    { id: 'l4', userId: 'u3', action: 'update_anchor_status', timestamp: '2025-07-21T08:45:00', details: '将主播"陈明"的状态从离线改为忙碌' },
+                    { id: 'l5', userId: 'u4', action: 'create_task', timestamp: '2025-07-21T11:20:00', details: '创建了新任务"科技创新产品推广"' },
+                    { id: 'l6', userId: 'u5', action: 'update_task_status', timestamp: '2025-07-21T14:10:00', details: '将任务"快乐旅游社暑期活动"的状态从进行中改为已完成' },
+                    { id: 'l7', userId: 'u1', action: 'system_setting_change', timestamp: '2025-07-20T16:30:00', details: '修改了系统通知设置' },
+                    { id: 'l8', userId: 'u7', action: 'export_data', timestamp: '2025-07-21T13:45:00', details: '导出了6月份业绩数据' },
+                ]
+            },
+            customers: [
+                { id: 'c1', name: '幸福餐饮有限公司', contact: '张经理 13800138001', address: '北京市朝阳区建国路88号', paymentGMV: 125680, verificationGMV: 102450, cooperationStatus: 'active' },
+                { id: 'c2', name: '美丽化妆品有限公司', contact: '李总 13900139002', address: '上海市浦东新区陆家嘴1号', paymentGMV: 98650, verificationGMV: 87650, cooperationStatus: 'active' },
+                { id: 'c3', name: '快乐旅游社', contact: '王经理 13700137003', address: '广州市天河区体育西路123号', paymentGMV: 85460, verificationGMV: 78450, cooperationStatus: 'active' },
+                { id: 'c4', name: '时尚服装有限公司', contact: '赵总 13600136004', address: '深圳市南山区科技园456号', paymentGMV: 78450, verificationGMV: 68450, cooperationStatus: 'inactive' },
+                { id: 'c5', name: '科技创新有限公司', contact: '陈经理 13500135005', address: '杭州市西湖区文三路789号', paymentGMV: 65480, verificationGMV: 58450, cooperationStatus: 'active' },
+                { id: 'c6', name: '健康食品有限公司', contact: '刘总 13400134006', address: '成都市锦江区红星路100号', paymentGMV: 58460, verificationGMV: 52450, cooperationStatus: 'terminated' },
+                { id: 'c7', name: '优质教育机构', contact: '林经理 13300133007', address: '武汉市武昌区中南路200号', paymentGMV: 48460, verificationGMV: 42450, cooperationStatus: 'active' },
+                { id: 'c8', name: '安心保险有限公司', contact: '黄总 13200132008', address: '南京市秦淮区中山南路300号', paymentGMV: 42460, verificationGMV: 38450, cooperationStatus: 'active' },
+                { id: 'c9', name: '智能家居有限公司', contact: '周经理 13100131009', address: '重庆市渝中区解放碑400号', paymentGMV: 38460, verificationGMV: 35450, cooperationStatus: 'inactive' },
+                { id: 'c10', name: '绿色环保科技', contact: '吴总 13000130010', address: '西安市雁塔区长安南路500号', paymentGMV: 32460, verificationGMV: 28450, cooperationStatus: 'active' },
+            ],
+            
+            anchors: [
+                { id: 'a1', name: '张小明', avatar: '', category: 'food', performance: 120000, status: 'available' },
+                { id: 'a2', name: '李小红', avatar: '', category: 'beauty', performance: 100000, status: 'busy' },
+                { id: 'a3', name: '王大力', avatar: '', category: 'travel', performance: 90000, status: 'available' },
+                { id: 'a4', name: '赵小丽', avatar: '', category: 'clothing', performance: 80000, status: 'available' },
+                { id: 'a5', name: '陈明', avatar: '', category: 'digital', performance: 75000, status: 'offline' },
+                { id: 'a6', name: '刘芳', avatar: '', category: 'food', performance: 70000, status: 'busy' },
+                { id: 'a7', name: '林小华', avatar: '', category: 'beauty', performance: 65000, status: 'available' },
+                { id: 'a8', name: '黄丽', avatar: '', category: 'travel', performance: 60000, status: 'available' },
+                { id: 'a9', name: '周杰', avatar: '', category: 'clothing', performance: 55000, status: 'offline' },
+                { id: 'a10', name: '吴刚', avatar: '', category: 'digital', performance: 50000, status: 'available' },
+            ],
+            
+            tasks: [
+                { 
+                    id: 't1', 
+                    title: '幸福餐饮新品推广', 
+                    description: '推广幸福餐饮的夏季新品系列，包括新品菜品介绍、优惠活动宣传等', 
+                    customerId: 'c1', 
+                    requirements: '需要主播在餐厅现场直播，展示菜品制作过程，与观众互动并引导下单', 
+                    status: 'pending', 
+                    createdAt: '2025-07-01', 
+                    deadline: '2025-07-15', 
+                    assignedTo: ['a1', 'a3', 'a6'],
+                    schedule: [
+                        { anchorId: 'a1', date: '2025-07-05', startTime: '18:00', endTime: '20:00', location: '幸福餐饮北京店', status: 'confirmed' },
+                        { anchorId: 'a3', date: '2025-07-10', startTime: '19:00', endTime: '21:00', location: '幸福餐饮上海店', status: 'pending' }
+                    ]
+                },
+                { 
+                    id: 't2', 
+                    title: '美丽化妆品夏季促销', 
+                    description: '推广美丽化妆品的夏季新品和促销活动，提升品牌知名度和产品销量', 
+                    customerId: 'c2', 
+                    requirements: '主播需要在直播间展示产品特点，进行试用演示，并提供专属优惠码', 
+                    status: 'in_progress', 
+                    createdAt: '2025-07-02', 
+                    deadline: '2025-07-20', 
+                    assignedTo: ['a2', 'a7'],
+                    schedule: [
+                        { anchorId: 'a2', date: '2025-07-08', startTime: '20:00', endTime: '22:00', location: '美丽化妆品直播间', status: 'confirmed' },
+                        { anchorId: 'a7', date: '2025-07-15', startTime: '19:30', endTime: '21:30', location: '美丽化妆品直播间', status: 'confirmed' }
+                    ]
+                },
+                { 
+                    id: 't3', 
+                    title: '快乐旅游社暑期活动', 
+                    description: '推广快乐旅游社的暑期旅游套餐，吸引更多客户预订', 
+                    customerId: 'c3', 
+                    requirements: '主播需要介绍旅游目的地特色，展示行程安排，并提供专属优惠', 
+                    status: 'completed', 
+                    createdAt: '2025-07-03', 
+                    deadline: '2025-07-10', 
+                    assignedTo: ['a3', 'a8'],
+                    schedule: [
+                        { anchorId: 'a3', date: '2025-07-05', startTime: '15:00', endTime: '17:00', location: '快乐旅游社直播间', status: 'confirmed' },
+                        { anchorId: 'a8', date: '2025-07-08', startTime: '16:00', endTime: '18:00', location: '快乐旅游社直播间', status: 'confirmed' }
+                    ]
+                },
+                { 
+                    id: 't4', 
+                    title: '时尚服装新品发布会', 
+                    description: '为时尚服装有限公司举办新品发布会，展示秋季服装系列', 
+                    customerId: 'c4', 
+                    requirements: '主播需要穿着展示服装，介绍设计理念和搭配技巧，并引导观众购买', 
+                    status: 'cancelled', 
+                    createdAt: '2025-07-04', 
+                    deadline: '2025-07-25', 
+                    assignedTo: ['a4', 'a9'],
+                    schedule: []
+                },
+                { 
+                    id: 't5', 
+                    title: '科技创新产品体验', 
+                    description: '推广科技创新有限公司的最新智能产品，提供用户体验分享', 
+                    customerId: 'c5', 
+                    requirements: '主播需要实际操作产品，展示功能特点，并与观众互动解答问题', 
+                    status: 'pending', 
+                    createdAt: '2025-07-05', 
+                    deadline: '2025-07-30', 
+                    assignedTo: ['a5', 'a10'],
+                    schedule: []
+                },
+                { 
+                    id: 't6', 
+                    title: '健康食品品牌推广', 
+                    description: '提升健康食品有限公司的品牌知名度，推广有机食品系列', 
+                    customerId: 'c6', 
+                    requirements: '主播需要介绍产品的健康理念，展示产品特点，并进行试吃体验', 
+                    status: 'pending', 
+                    createdAt: '2025-07-06', 
+                    deadline: '2025-08-05', 
+                    assignedTo: ['a1', 'a6'],
+                    schedule: []
+                },
+            ],
+            
+            schedule: [
+                { id: 's1', taskId: 't1', anchorId: 'a1', startTime: '2025-07-05T18:00', endTime: '2025-07-05T20:00', status: 'confirmed', location: '幸福餐饮北京店' },
+                { id: 's2', taskId: 't1', anchorId: 'a3', startTime: '2025-07-10T19:00', endTime: '2025-07-10T21:00', status: 'pending', location: '幸福餐饮上海店' },
+                { id: 's3', taskId: 't2', anchorId: 'a2', startTime: '2025-07-08T20:00', endTime: '2025-07-08T22:00', status: 'confirmed', location: '美丽化妆品直播间' },
+                { id: 's4', taskId: 't2', anchorId: 'a7', startTime: '2025-07-15T19:30', endTime: '2025-07-15T21:30', status: 'confirmed', location: '美丽化妆品直播间' },
+                { id: 's5', taskId: 't3', anchorId: 'a3', startTime: '2025-07-05T15:00', endTime: '2025-07-05T17:00', status: 'confirmed', location: '快乐旅游社直播间' },
+                { id: 's6', taskId: 't3', anchorId: 'a8', startTime: '2025-07-08T16:00', endTime: '2025-07-08T18:00', status: 'confirmed', location: '快乐旅游社直播间' },
+            ]
+        };
+        
+        // DOM 加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化页面
+            initDashboard();
+            initCustomers();
+            initAnchors();
+            initSchedule();
+            initTasks();
+            
+            // 导航切换
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('data-target');
+                    
+                    // 更新导航样式
+                    navLinks.forEach(item => {
+                        item.classList.remove('bg-blue-700');
+                    });
+                    this.classList.add('bg-blue-700');
+                    
+                    // 更新页面标题
+                    document.getElementById('page-title').textContent = this.querySelector('span').textContent;
+                    
+                    // 显示对应页面
+                    document.querySelectorAll('.page-section').forEach(section => {
+                        section.classList.add('hidden');
+                    });
+                    document.getElementById(targetId).classList.remove('hidden');
+                });
+            });
+            
+            // 模态框控制
+            const modals = {
+                'add-customer-btn': 'add-customer-modal',
+                'add-anchor-btn': 'add-anchor-modal',
+                'add-schedule-btn': 'add-schedule-modal',
+                'add-task-btn': 'add-task-modal'
+            };
+            
+            for (const [btnId, modalId] of Object.entries(modals)) {
+                const btn = document.getElementById(btnId);
+                if (btn) {
+                    btn.addEventListener('click', function() {
+                        document.getElementById(modalId).classList.remove('hidden');
+                    });
+                }
+            }
+            
+            // 关闭模态框
+            document.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.closest('.fixed').classList.add('hidden');
+                });
+            });
+            
+            // 表单提交事件
+            document.getElementById('add-customer-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 获取表单数据
+                const name = document.getElementById('customer-name').value;
+                const contact = document.getElementById('customer-contact').value;
+                const address = document.getElementById('customer-address').value;
+                const paymentGMV = parseFloat(document.getElementById('payment-gmv').value);
+                const verificationGMV = parseFloat(document.getElementById('verification-gmv').value);
+                const cooperationStatus = document.getElementById('cooperation-status').value;
+                
+                // 创建新客户对象
+                const newCustomer = {
+                    id: 'c' + (mockData.customers.length + 1),
+                    name: name,
+                    contact: contact,
+                    address: address,
+                    paymentGMV: paymentGMV,
+                    verificationGMV: verificationGMV,
+                    cooperationStatus: cooperationStatus
+                };
+                
+                // 添加到模拟数据
+                mockData.customers.push(newCustomer);
+                
+                // 更新客户列表
+                initCustomers();
+                populateCustomerSelects();
+                
+                // 关闭模态框并重置表单
+                document.getElementById('add-customer-modal').classList.add('hidden');
+                this.reset();
+                
+                // 显示成功提示
+                alert('客户添加成功！');
+            });
+            
+            document.getElementById('add-anchor-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 获取表单数据
+                const name = document.getElementById('anchor-name').value;
+                const avatar = document.getElementById('anchor-avatar').value;
+                const category = document.getElementById('anchor-category').value;
+                const performance = parseFloat(document.getElementById('anchor-performance').value);
+                const status = document.getElementById('anchor-status').value;
+                
+                // 创建新主播对象
+                const newAnchor = {
+                    id: 'a' + (mockData.anchors.length + 1),
+                    name: name,
+                    avatar: avatar,
+                    category: category,
+                    performance: performance,
+                    status: status
+                };
+                
+                // 添加到模拟数据
+                mockData.anchors.push(newAnchor);
+                
+                // 更新主播列表和下拉框
+                initAnchors();
+                populateAnchorSelects();
+                
+                // 关闭模态框并重置表单
+                document.getElementById('add-anchor-modal').classList.add('hidden');
+                this.reset();
+                
+                // 显示成功提示
+                alert('主播添加成功！');
+            });
+            
+            document.getElementById('add-schedule-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 获取表单数据
+                const anchorId = document.getElementById('schedule-anchor').value;
+                const taskId = document.getElementById('schedule-task').value;
+                const date = document.getElementById('schedule-date').value;
+                const startTime = document.getElementById('schedule-start-time').value;
+                const endTime = document.getElementById('schedule-end-time').value;
+                const location = document.getElementById('schedule-location').value;
+                const status = document.getElementById('schedule-status').value;
+                
+                // 验证主播和任务是否存在
+                const anchorExists = mockData.anchors.some(a => a.id === anchorId);
+                const taskExists = mockData.tasks.some(t => t.id === taskId);
+                
+                if (!anchorExists || !taskExists) {
+                    alert('请选择有效的主播和任务！');
+                    return;
+                }
+                
+                // 创建新排期对象
+                const newSchedule = {
+                    id: 's' + (mockData.schedule.length + 1),
+                    taskId: taskId,
+                    anchorId: anchorId,
+                    startTime: `${date}T${startTime}`,
+                    endTime: `${date}T${endTime}`,
+                    status: status,
+                    location: location
+                };
+                
+                // 添加到模拟数据
+                mockData.schedule.push(newSchedule);
+                
+                // 更新排期表
+                initSchedule();
+                
+                // 关闭模态框并重置表单
+                document.getElementById('add-schedule-modal').classList.add('hidden');
+                this.reset();
+                
+                // 显示成功提示
+                alert('排期添加成功！');
+            });
+            
+            document.getElementById('add-task-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 获取表单数据
+                const title = document.getElementById('task-title').value;
+                const description = document.getElementById('task-description').value;
+                const customerId = document.getElementById('task-customer').value;
+                const requirements = document.getElementById('task-requirements').value;
+                const deadline = document.getElementById('task-deadline').value;
+                
+                // 获取选中的主播
+                const selectElement = document.getElementById('task-anchors');
+                const selectedAnchors = Array.from(selectElement.selectedOptions).map(option => option.value);
+                
+                // 验证客户和主播是否选择
+                if (!customerId || selectedAnchors.length === 0) {
+                    alert('请选择客户和至少一位主播！');
+                    return;
+                }
+                
+                // 创建新任务对象
+                const newTask = {
+                    id: 't' + (mockData.tasks.length + 1),
+                    title: title,
+                    description: description,
+                    customerId: customerId,
+                    requirements: requirements,
+                    status: 'pending',
+                    createdAt: new Date().toISOString().split('T')[0],
+                    deadline: deadline,
+                    assignedTo: selectedAnchors,
+                    schedule: []
+                };
+                
+                // 添加到模拟数据
+                mockData.tasks.push(newTask);
+                
+                // 更新任务列表和统计
+                initTasks();
+                populateTaskSelects();
+                
+                // 关闭模态框并重置表单
+                document.getElementById('add-task-modal').classList.add('hidden');
+                this.reset();
+                
+                // 显示成功提示
+                alert('任务发布成功！');
+            });
+        });
+        
+        // 初始化仪表盘
+        function initDashboard() {
+            // 初始化GMV趋势图表
+            const gmvCtx = document.getElementById('gmvChart').getContext('2d');
+            const gmvChart = new Chart(gmvCtx, {
+                type: 'line',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月'],
+                    datasets: [
+                        {
+                            label: '支付GMV',
+                            data: [850000, 920000, 1050000, 980000, 1150000, 1200000, 1258430],
+                            borderColor: '#0052D9',
+                            backgroundColor: 'rgba(0, 82, 217, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: '核销GMV',
+                            data: [680000, 750000, 820000, 800000, 920000, 950000, 985670],
+                            borderColor: '#00A870',
+                            backgroundColor: 'rgba(0, 168, 112, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '¥' + (value / 10000) + '万';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 初始化客户分布图表
+            const customerCtx = document.getElementById('customerChart').getContext('2d');
+            const customerChart = new Chart(customerCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['餐饮', '美妆', '旅游', '服饰', '数码', '其他'],
+                    datasets: [{
+                        data: [35, 20, 15, 12, 10, 8],
+                        backgroundColor: [
+                            '#0052D9',
+                            '#00A870',
+                            '#FF6B00',
+                            '#FF4D4F',
+                            '#722ED1',
+                            '#1890FF'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+        
+        // 初始化客户管理页面
+        function initCustomers() {
+            const tableBody = document.getElementById('customer-table-body');
+            if (!tableBody) return;
+            
+            // 清空表格
+            tableBody.innerHTML = '';
+            
+            // 添加客户数据
+            mockData.customers.forEach(customer => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                
+                // 状态标签样式
+                let statusClass = '';
+                let statusText = '';
+                
+                switch (customer.cooperationStatus) {
+                    case 'active':
+                        statusClass = 'bg-green-100 text-green-800';
+                        statusText = '合作中';
+                        break;
+                    case 'inactive':
+                        statusClass = 'bg-yellow-100 text-yellow-800';
+                        statusText = '已暂停';
+                        break;
+                    case 'terminated':
+                        statusClass = 'bg-red-100 text-red-800';
+                        statusText = '已终止';
+                        break;
+                }
+                
+                row.innerHTML = `
+                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-800">${customer.name}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">${customer.contact}</td>
+                    <td class="px-4 py-3 text-sm text-gray-600">${customer.address}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">¥${customer.paymentGMV.toLocaleString()}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">¥${customer.verificationGMV.toLocaleString()}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full ${statusClass}">${statusText}</span>
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                        <div class="flex space-x-2">
+                            <button class="text-primary hover:text-blue-700">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                            <button class="text-red-500 hover:text-red-700">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // 初始化主播管理页面
+        function initAnchors() {
+            const anchorGrid = document.getElementById('anchor-grid');
+            if (!anchorGrid) return;
+            
+            // 清空网格
+            anchorGrid.innerHTML = '';
+            
+            // 添加主播卡片
+            mockData.anchors.forEach(anchor => {
+                // 生成头像
+                const avatar = anchor.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(anchor.name)}&background=random&color=fff&size=64`;
+                
+                // 分类标签样式
+                let categoryClass = '';
+                let categoryText = '';
+                
+                switch (anchor.category) {
+                    case 'food':
+                        categoryClass = 'bg-blue-100 text-blue-800';
+                        categoryText = '美食';
+                        break;
+                    case 'beauty':
+                        categoryClass = 'bg-pink-100 text-pink-800';
+                        categoryText = '美妆';
+                        break;
+                    case 'travel':
+                        categoryClass = 'bg-purple-100 text-purple-800';
+                        categoryText = '旅游';
+                        break;
+                    case 'clothing':
+                        categoryClass = 'bg-green-100 text-green-800';
+                        categoryText = '服饰';
+                        break;
+                    case 'digital':
+                        categoryClass = 'bg-red-100 text-red-800';
+                        categoryText = '数码';
+                        break;
+                    default:
+                        categoryClass = 'bg-gray-100 text-gray-800';
+                        categoryText = '其他';
+                }
+                
+                // 状态标签样式
+                let statusClass = '';
+                let statusText = '';
+                
+                switch (anchor.status) {
+                    case 'available':
+                        statusClass = 'bg-green-100 text-green-800';
+                        statusText = '空闲';
+                        break;
+                    case 'busy':
+                        statusClass = 'bg-yellow-100 text-yellow-800';
+                        statusText = '忙碌';
+                        break;
+                    case 'offline':
+                        statusClass = 'bg-gray-100 text-gray-800';
+                        statusText = '离线';
+                        break;
+                }
+                
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow-card overflow-hidden hover:shadow-hover transition-all-300 border border-gray-100';
+                card.innerHTML = `
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <img src="${avatar}" alt="${anchor.name}" class="w-16 h-16 rounded-full object-cover">
+                            <div class="ml-4">
+                                <h3 class="text-lg font-semibold text-gray-800">${anchor.name}</h3>
+                                <div class="flex items-center mt-1">
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full ${categoryClass}">${categoryText}</span>
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full ${statusClass} ml-2">${statusText}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <p class="text-sm text-gray-500">业绩指标</p>
+                                <p class="text-lg font-bold text-gray-800">¥${anchor.performance.toLocaleString()}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-gray-500">完成率</p>
+                                <p class="text-lg font-bold text-green-500">85%</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="flex-1 px-3 py-2 bg-primary text-white rounded-md hover:bg-blue-700 transition-all-300 text-sm">
+                                安排排期
+                            </button>
+                            <button class="px-3 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-all-300">
+                                <i class="fa fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                anchorGrid.appendChild(card);
+            });
+            
+            // 填充主播选择下拉框
+            function populateAnchorSelects() {
+                const anchorSelects = [
+                    document.getElementById('anchor-select'),
+                    document.getElementById('schedule-anchor'),
+                    document.getElementById('task-anchors')
+                ];
+                
+                anchorSelects.forEach(select => {
+                    if (!select) return;
+                    
+                    // 清空现有选项
+                    select.innerHTML = '';
+                    
+                    // 对于多选框，不添加"全部"选项
+                    if (select.id !== 'task-anchors') {
+                        const allOption = document.createElement('option');
+                        allOption.value = 'all';
+                        allOption.textContent = '全部主播';
+                        select.appendChild(allOption);
+                    }
+                    
+                    mockData.anchors.forEach(anchor => {
+                        const option = document.createElement('option');
+                        option.value = anchor.id;
+                        option.textContent = anchor.name;
+                        select.appendChild(option);
+                    });
+                });
+            }
+            
+            populateAnchorSelects();
+        }
+        
+        // 填充任务选择下拉框
+        function populateTaskSelects() {
+            const taskSelect = document.getElementById('schedule-task');
+            if (taskSelect) {
+                // 清空现有选项
+                taskSelect.innerHTML = '';
+                
+                // 添加默认选项
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = '请选择任务';
+                taskSelect.appendChild(defaultOption);
+                
+                // 添加任务选项
+                mockData.tasks.forEach(task => {
+                    const option = document.createElement('option');
+                    option.value = task.id;
+                    option.textContent = task.title;
+                    taskSelect.appendChild(option);
+                });
+            }
+        }
+        
+        // 初始化主播排期页面
+        function initSchedule() {
+            const calendarGrid = document.getElementById('calendar-grid');
+            if (!calendarGrid) return;
+            
+            // 填充任务选择下拉框
+            populateTaskSelects();
+            
+            // 获取当前日期
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            
+            // 更新当前月份显示
+            document.getElementById('current-month').textContent = `${currentYear}年${currentMonth + 1}月`;
+            
+            // 获取当月第一天是星期几
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            
+            // 获取当月天数
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            // 清空日历
+            calendarGrid.innerHTML = '';
+            
+            // 添加空白格子
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'bg-gray-50 border border-gray-100';
+                calendarGrid.appendChild(emptyDay);
+            }
+            
+            // 添加日期格子
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'border border-gray-100 p-1 calendar-day';
+                
+                // 添加日期数字
+                const dateNumber = document.createElement('div');
+                dateNumber.className = 'text-right text-sm font-medium text-gray-600 mb-1';
+                dateNumber.textContent = day;
+                dayCell.appendChild(dateNumber);
+                
+                // 添加排期事件
+                const events = mockData.schedule.filter(s => {
+                    const eventDate = new Date(s.startTime);
+                    return eventDate.getDate() === day && 
+                           eventDate.getMonth() === currentMonth && 
+                           eventDate.getFullYear() === currentYear;
+                });
+                
+                events.forEach(event => {
+                    const anchor = mockData.anchors.find(a => a.id === event.anchorId);
+                    const task = mockData.tasks.find(t => t.id === event.taskId);
+                    
+                    if (anchor && task) {
+                        // 事件标签样式
+                        let eventClass = '';
+                        
+                        switch (event.status) {
+                            case 'confirmed':
+                                eventClass = 'bg-blue-500 text-white';
+                                break;
+                            case 'pending':
+                                eventClass = 'bg-yellow-500 text-white';
+                                break;
+                            case 'cancelled':
+                                eventClass = 'bg-red-500 text-white';
+                                break;
+                        }
+                        
+                        const eventElement = document.createElement('div');
+                        eventElement.className = `calendar-event ${eventClass}`;
+                        eventElement.textContent = `${anchor.name}: ${task.title}`;
+                        dayCell.appendChild(eventElement);
+                    }
+                });
+                
+                calendarGrid.appendChild(dayCell);
+            }
+            
+            // 月份切换按钮
+            document.getElementById('prev-month').addEventListener('click', function() {
+                // 模拟切换到上个月
+                alert('切换到上个月');
+            });
+            
+            document.getElementById('next-month').addEventListener('click', function() {
+                // 模拟切换到下个月
+                alert('切换到下个月');
+            });
+        }
+        
+        // 初始化任务管理页面
+        function initTasks() {
+            const taskList = document.getElementById('task-list');
+            if (!taskList) return;
+            
+            // 清空任务列表
+            taskList.innerHTML = '';
+            
+            // 添加任务卡片
+            mockData.tasks.forEach(task => {
+                const customer = mockData.customers.find(c => c.id === task.customerId);
+                
+                if (customer) {
+                    // 状态标签样式
+                    let statusClass = '';
+                    let statusText = '';
+                    
+                    switch (task.status) {
+                        case 'pending':
+                            statusClass = 'bg-yellow-100 text-yellow-800';
+                            statusText = '待接单';
+                            break;
+                        case 'in_progress':
+                            statusClass = 'bg-blue-100 text-blue-800';
+                            statusText = '进行中';
+                            break;
+                        case 'completed':
+                            statusClass = 'bg-green-100 text-green-800';
+                            statusText = '已完成';
+                            break;
+                        case 'cancelled':
+                            statusClass = 'bg-red-100 text-red-800';
+                            statusText = '已取消';
+                            break;
+                    }
+                    
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-lg shadow-card p-4 hover:shadow-hover transition-all-300 border border-gray-100';
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-lg font-semibold text-gray-800">${task.title}</h3>
+                            <span class="px-2 py-1 text-xs font-medium rounded-full ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="flex items-center mb-3">
+                            <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold">
+                                ${customer.name.charAt(0)}
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-800">${customer.name}</p>
+                                <p class="text-xs text-gray-500">截止时间: ${formatDate(task.deadline)}</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4 line-clamp-2">${task.description}</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-wrap gap-1">
+                                ${task.assignedTo.map(anchorId => {
+                                    const anchor = mockData.anchors.find(a => a.id === anchorId);
+                                    return anchor ? `
+                                        <div class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-600">
+                                            ${anchor.name.charAt(0)}
+                                        </div>
+                                    ` : '';
+                                }).join('')}
+                            </div>
+                            <button class="view-task-btn px-3 py-1 text-sm text-primary hover:text-blue-700" data-task-id="${task.id}">
+                                查看详情
+                            </button>
+                        </div>
+                    `;
+                    
+                    taskList.appendChild(card);
+                }
+            });
+            
+            // 填充客户选择下拉框
+            function populateCustomerSelects() {
+                const customerSelect = document.getElementById('task-customer');
+                if (customerSelect) {
+                    // 清空现有选项
+                    customerSelect.innerHTML = '';
+                    
+                    // 添加默认选项
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = '请选择客户';
+                    customerSelect.appendChild(defaultOption);
+                    
+                    // 添加客户选项
+                    mockData.customers.forEach(customer => {
+                        const option = document.createElement('option');
+                        option.value = customer.id;
+                        option.textContent = customer.name;
+                        customerSelect.appendChild(option);
+                    });
+                }
+            }
+            
+            populateCustomerSelects();
+            
+            // 任务详情按钮点击事件
+            document.querySelectorAll('.view-task-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const taskId = this.getAttribute('data-task-id');
+                    showTaskDetail(taskId);
+                });
+            });
+            
+            // 初始化任务统计图表
+            initTaskCharts();
+        }
+        
+        // 显示任务详情
+        function showTaskDetail(taskId) {
+            const task = mockData.tasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            const customer = mockData.customers.find(c => c.id === task.customerId);
+            if (!customer) return;
+            
+            // 填充任务详情
+            document.getElementById('detail-task-title').textContent = task.title;
+            document.getElementById('detail-task-customer').textContent = customer.name;
+            document.getElementById('detail-task-deadline').textContent = formatDate(task.deadline);
+            document.getElementById('detail-task-description').textContent = task.description;
+            document.getElementById('detail-task-requirements').textContent = task.requirements;
+            
+            // 状态标签样式
+            const statusElement = document.getElementById('detail-task-status');
+            let statusClass = '';
+            let statusText = '';
+            
+            switch (task.status) {
+                case 'pending':
+                    statusClass = 'bg-yellow-100 text-yellow-800';
+                    statusText = '待接单';
+                    break;
+                case 'in_progress':
+                    statusClass = 'bg-blue-100 text-blue-800';
+                    statusText = '进行中';
+                    break;
+                case 'completed':
+                    statusClass = 'bg-green-100 text-green-800';
+                    statusText = '已完成';
+                    break;
+                case 'cancelled':
+                    statusClass = 'bg-red-100 text-red-800';
+                    statusText = '已取消';
+                    break;
+            }
+            
+            statusElement.className = `px-2 py-1 rounded-full text-xs font-medium ${statusClass}`;
+            statusElement.textContent = statusText;
+            
+            // 填充指派主播
+            const anchorsContainer = document.getElementById('detail-task-anchors');
+            anchorsContainer.innerHTML = '';
+            
+            task.assignedTo.forEach(anchorId => {
+                const anchor = mockData.anchors.find(a => a.id === anchorId);
+                if (anchor) {
+                    const anchorTag = document.createElement('div');
+                    anchorTag.className = 'px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-700';
+                    anchorTag.textContent = anchor.name;
+                    anchorsContainer.appendChild(anchorTag);
+                }
+            });
+            
+            // 填充排期安排
+            const scheduleContainer = document.getElementById('detail-task-schedule');
+            scheduleContainer.innerHTML = '';
+            
+            if (task.schedule.length > 0) {
+                task.schedule.forEach(schedule => {
+                    const anchor = mockData.anchors.find(a => a.id === schedule.anchorId);
+                    if (anchor) {
+                        // 排期状态样式
+                        let scheduleStatusClass = '';
+                        let scheduleStatusText = '';
+                        
+                        switch (schedule.status) {
+                            case 'confirmed':
+                                scheduleStatusClass = 'text-green-600';
+                                scheduleStatusText = '已确认';
+                                break;
+                            case 'pending':
+                                scheduleStatusClass = 'text-yellow-600';
+                                scheduleStatusText = '待确认';
+                                break;
+                            case 'cancelled':
+                                scheduleStatusClass = 'text-red-600';
+                                scheduleStatusText = '已取消';
+                                break;
+                        }
+                        
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="px-4 py-2 text-sm text-gray-800">${anchor.name}</td>
+                            <td class="px-4 py-2 text-sm text-gray-600">${schedule.date}</td>
+                            <td class="px-4 py-2 text-sm text-gray-600">${schedule.startTime} - ${schedule.endTime}</td>
+                            <td class="px-4 py-2 text-sm text-gray-600">${schedule.location}</td>
+                            <td class="px-4 py-2 text-sm ${scheduleStatusClass}">${scheduleStatusText}</td>
+                        `;
+                        
+                        scheduleContainer.appendChild(row);
+                    }
+                });
+            } else {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="5" class="px-4 py-4 text-center text-sm text-gray-500">暂无排期安排</td>
+                `;
+                scheduleContainer.appendChild(row);
+            }
+            
+            // 填充操作按钮
+            const actionsContainer = document.getElementById('task-actions');
+            actionsContainer.innerHTML = '';
+            
+            // 根据任务状态显示不同按钮
+            switch (task.status) {
+                case 'pending':
+                    // 待接单状态显示接单按钮
+                    const acceptBtn = document.createElement('button');
+                    acceptBtn.className = 'px-4 py-2 bg-primary text-white rounded-md hover:bg-blue-700';
+                    acceptBtn.textContent = '接受任务';
+                    acceptBtn.addEventListener('click', function() {
+                        alert('任务已接受！');
+                        document.getElementById('task-detail-modal').classList.add('hidden');
+                    });
+                    actionsContainer.appendChild(acceptBtn);
+                    break;
+                    
+                case 'in_progress':
+                    // 进行中状态显示完成按钮
+                    const completeBtn = document.createElement('button');
+                    completeBtn.className = 'px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700';
+                    completeBtn.textContent = '完成任务';
+                    completeBtn.addEventListener('click', function() {
+                        alert('任务已完成！');
+                        document.getElementById('task-detail-modal').classList.add('hidden');
+                    });
+                    actionsContainer.appendChild(completeBtn);
+                    break;
+                    
+                case 'completed':
+                    // 已完成状态显示评价按钮
+                    const reviewBtn = document.createElement('button');
+                    reviewBtn.className = 'px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700';
+                    reviewBtn.textContent = '查看评价';
+                    reviewBtn.addEventListener('click', function() {
+                        alert('评价功能正在开发中！');
+                    });
+                    actionsContainer.appendChild(reviewBtn);
+                    break;
+            }
+            
+            // 显示任务详情模态框
+            document.getElementById('task-detail-modal').classList.remove('hidden');
+        }
+        
+        // 初始化任务统计图表
+        function initTaskCharts() {
+            // 任务状态分布图表
+            const statusCtx = document.getElementById('taskStatusChart').getContext('2d');
+            
+            // 统计各状态任务数量
+            const statusCounts = {
+                'pending': 0,
+                'in_progress': 0,
+                'completed': 0,
+                'cancelled': 0
+            };
+            
+            mockData.tasks.forEach(task => {
+                statusCounts[task.status]++;
+            });
+            
+            const taskStatusChart = new Chart(statusCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['待接单', '进行中', '已完成', '已取消'],
+                    datasets: [{
+                        data: [
+                            statusCounts.pending,
+                            statusCounts.in_progress,
+                            statusCounts.completed,
+                            statusCounts.cancelled
+                        ],
+                        backgroundColor: [
+                            '#FAAD14',
+                            '#1890FF',
+                            '#52C41A',
+                            '#F5222D'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+            
+            // 任务趋势图表
+            const trendCtx = document.getElementById('taskTrendChart').getContext('2d');
+            
+            // 模拟过去7天的任务数据
+            const taskTrendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['7/1', '7/2', '7/3', '7/4', '7/5', '7/6', '7/7'],
+                    datasets: [
+                        {
+                            label: '新增任务',
+                            data: [2, 1, 3, 2, 1, 3, 2],
+                            borderColor: '#1890FF',
+                            backgroundColor: 'rgba(24, 144, 255, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: '完成任务',
+                            data: [0, 1, 1, 2, 1, 2, 3],
+                            borderColor: '#52C41A',
+                            backgroundColor: 'rgba(82, 196, 26, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 日期格式化函数
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化用户管理
+            initUserManagement();
+            
+            // 初始化协作状态
+            initCollaborationStatus();
+        });
+    </script>
+
+
+</body></html>
